@@ -46,7 +46,7 @@ def main():
 	out_dir = Path('tts_outputs')
 	out_dir.mkdir(exist_ok=True)
 	out_path = out_dir / 'output.wav'
-	tts.infer(spk_audio_prompt='examples/voice_03.wav', text=text, output_path=str(out_path), verbose=True)
+	tts.infer(spk_audio_prompt='voices/ssr.WAV', text=text, output_path=str(out_path), verbose=True)
 
 if __name__ == '__main__':
 	main()
