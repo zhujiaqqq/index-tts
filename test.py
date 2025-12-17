@@ -33,17 +33,8 @@ def chunk_text(text, max_chars=50):
 	return chunks
 
 def main():
-	if len(sys.argv) < 2:
-		print('Usage: python test.py <text_file>')
-		sys.exit(1)
-	txt_path = Path(sys.argv[1])
-	if not txt_path.exists():
-		print('File not found:', txt_path)
-		sys.exit(1)
-	text = txt_path.read_text(encoding='utf-8')
-	# remove internal newlines to let punctuation-based splitting work
-	text = text.replace('\n', '').strip()
-	chunks = chunk_text(text, max_chars=50)
+
+	text = "你好,欢迎使用IndexTTS。这是一个测试文本，用于演示如何将长文本拆分成较小的块，以便进行语音合成处理。希望你喜欢这个示例！"
 
 	try:
 		from indextts.infer_v2 import IndexTTS2
@@ -54,13 +45,8 @@ def main():
 
 	out_dir = Path('tts_outputs')
 	out_dir.mkdir(exist_ok=True)
-	for i, chunk in enumerate(chunks, start=1):
-		out_path = out_dir / f'gen_{i:03d}.wav'
-		preview = chunk[:40] + ('...' if len(chunk) > 40 else '')
-		print(f'Generating {out_path} — "{preview}"')
-		tts.infer(spk_audio_prompt='examples/voice_03.wav', text=chunk, output_path=str(out_path), verbose=True)
-
-	print(f'Done — wrote {len(chunks)} files to {out_dir}')
+	out_path = out_dir / 'output.wav'
+	tts.infer(spk_audio_prompt='examples/voice_03.wav', text=text, output_path=str(out_path), verbose=True)
 
 if __name__ == '__main__':
 	main()
