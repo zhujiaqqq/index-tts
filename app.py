@@ -227,29 +227,6 @@ class TTSApp(tk.Tk):
             self.log(f'Chunks: {total}')
             self.after(0, lambda: self.progress.config(maximum=total))
 
-            # ensure stdlib 'copy' module is used (avoid local copy.py shadowing)
-            try:
-                import copy as _copy
-                mod_file = getattr(_copy, '__file__', '')
-                if mod_file:
-                    # if the imported copy module lives in the workspace root, replace it
-                    workspace_root = Path.cwd().resolve()
-                    try:
-                        if Path(mod_file).resolve().parent == workspace_root:
-                            stdlib_dir = sysconfig.get_paths().get('stdlib')
-                            if stdlib_dir:
-                                std_copy = Path(stdlib_dir) / 'copy.py'
-                                if std_copy.exists():
-                                    spec = importlib.util.spec_from_file_location('copy', str(std_copy))
-                                    module = importlib.util.module_from_spec(spec)
-                                    spec.loader.exec_module(module)
-                                    sys.modules['copy'] = module
-                    except Exception:
-                        # non-fatal: fall back to whatever 'copy' we have
-                        pass
-            except Exception:
-                pass
-
             # initialize model
             try:
                 from indextts.infer_v2 import IndexTTS2
