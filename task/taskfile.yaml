@@ -1,0 +1,4 @@
+story:
+  path: task/story.txt
+  title: "对牛弹琴"
+  voice: "voices/Storyteller.wav"
