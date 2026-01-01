@@ -23,6 +23,8 @@ import tempfile
 import shutil
 import wave
 import traceback
+import subprocess
+import importlib.util
 
 try:
 	import yaml
@@ -187,6 +189,27 @@ def run_task(taskfile_path='./task/taskfile.yaml'):
 		print(f'Concatenating {len(tmp_files)} wavs into {final_path}')
 		concatenate_wavs(tmp_files, str(final_path))
 		print('Done — wrote', final_path)
+
+		# send the final audio via email using task/sendEmail.py (script contains sender creds)
+		recipient = '1027158353@qq.com'
+		send_script = Path('task/sendEmail.py')
+		if send_script.exists():
+			cmd = [sys.executable, str(send_script), recipient, '--file', str(final_path), '--subject', f'Generated audio: {final_name}', '--body', f'Please find attached {final_name}']
+			print('Invoking email script to send', final_path, 'to', recipient)
+			try:
+				res = subprocess.run(cmd, capture_output=True, text=True, timeout=180)
+				if res.returncode == 0:
+					print('Email script completed successfully')
+				else:
+					print('Email script exited with code', res.returncode, file=sys.stderr)
+					if res.stdout:
+						print(res.stdout)
+					if res.stderr:
+						print(res.stderr, file=sys.stderr)
+			except Exception as e:
+				print('Failed to run email script:', e, file=sys.stderr)
+		else:
+			print('sendEmail.py not found in task/ — skipping email')
 		return 0
 	finally:
 		try:
